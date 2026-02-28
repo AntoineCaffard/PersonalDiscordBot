@@ -61,6 +61,52 @@ async def d(interaction: discord.Interaction, value: str):
         await interaction.response.send_message(f"Erreur: {e}")
 
 @bot.tree.command(guild=discord.Object(id=guild_id))
+async def d_sum(interaction: discord.Interaction, value: str):
+    """
+    Lancer de dés avec modificateur et afficher uniquement la somme totale.
+    """
+    try:
+        num_dice, max_val, modifier = parse_dice(value)
+        results = [min(max(random.randint(1, max_val), 1), max_val) for _ in range(num_dice)]
+        total = sum(results) + modifier
+        mod_str = f"+{modifier}" if modifier > 0 else (f"{modifier}" if modifier < 0 else "0")
+
+        embed = discord.Embed(
+            title=f"🎲 Lancer de {num_dice}d{max_val}",
+            color=discord.Color.blurple()
+        )
+        embed.add_field(name="Modificateur", value=mod_str, inline=False)
+        embed.add_field(name="Total", value=str(total), inline=False)
+
+        await interaction.response.send_message(embed=embed, ephemeral=False)  # message privé
+
+    except Exception as e:
+        await interaction.response.send_message(f"Erreur: {e}", ephemeral=False)
+
+@bot.tree.command(guild=discord.Object(id=guild_id))
+async def d_sum_mj(interaction: discord.Interaction, value: str):
+    """
+    Lancer de dés avec modificateur et afficher uniquement la somme totale.
+    """
+    try:
+        num_dice, max_val, modifier = parse_dice(value)
+        results = [min(max(random.randint(1, max_val), 1), max_val) for _ in range(num_dice)]
+        total = sum(results) + modifier
+        mod_str = f"+{modifier}" if modifier > 0 else (f"{modifier}" if modifier < 0 else "0")
+        
+        embed = discord.Embed(
+            title=f"🎲 Lancer de {num_dice}d{max_val}",
+            color=discord.Color.blurple()
+        )
+        embed.add_field(name="Modificateur", value=mod_str, inline=False)
+        embed.add_field(name="Total", value=str(total), inline=False)
+
+        await interaction.response.send_message(embed=embed, ephemeral=True)  # message privé
+
+    except Exception as e:
+        await interaction.response.send_message(f"Erreur: {e}", ephemeral=True)
+
+@bot.tree.command(guild=discord.Object(id=guild_id))
 async def d_avantage(interaction: discord.Interaction, value: str):
 
     try:
