@@ -20,3 +20,9 @@ def dice_result_embed(user, num_dice, num_faces, modifier, results_raw, results,
     embed.add_field(name="Valeurs", value=f"```\n{results_raw}\n```", inline=False)
     embed.add_field(name="Résultat", value=table_str, inline=False)
     return embed
+
+def genie_result_embed(user, question, answer, color=discord.Color.blue()):
+    embed = discord.Embed(title=f"🔮 {user.display_name} fait une requete au Genie !", color=color)
+    embed.add_field(name="Demande", value=f"{question}", inline=False)
+    embed.add_field(name="Reponse", value=f"```{answer}```", inline=False)
+    return embed
