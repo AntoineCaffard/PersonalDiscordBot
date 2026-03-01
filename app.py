@@ -21,7 +21,7 @@ class MyBot(commands.Bot):
         print(f"✅ {len(synced)} commandes synchronisées sur le serveur test")
 
     async def on_ready(self):
-        print(f"Connecté en tant que {self.user} (ID: {self.user.id})")
+        print(f"✅ Connecté en tant que {self.user} (ID: {self.user.id})")
 
 async def run():
     token = os.getenv("BOT_TOKEN")

@@ -1,6 +1,5 @@
 import discord
 
-
 def colorize(n, max_val, mod=0):
     if n == 1:
         return f"🔴 {n}"

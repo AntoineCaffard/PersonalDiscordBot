@@ -1,4 +1,5 @@
 import discord
+import re
 from discord.ext import commands
 from discord import app_commands
 from utils.dice_logic import DiceRoller
@@ -78,6 +79,22 @@ class DiceCog(commands.Cog):
     @app_commands.describe(dice="Exemple : 1d20, 2d6, 4d10+3")
     async def diceRollMoy(self, interaction: discord.Interaction, dice: str):
         await self._send_dice(interaction, dice, mode="moyenne")
+
+
+    @commands.Cog.listener("on_message")
+    async def on_message(self, message: discord.Message):
+        if message.author.bot:
+            return
+        matches = re.finditer(r"(\d+)d(\d+)([+-]\d+)?", message.content.lower())
+        for match in matches:
+            try:
+                dice_str = match.group(0)
+                num_dice, num_faces, modifier, results_raw, final_results = self.roll_dice(dice_str)
+                embed = dice_result_embed(message.author, num_dice, num_faces, modifier, results_raw, final_results)
+                await message.channel.send(embed=embed)
+            except ValueError:
+                continue
+        await self.bot.process_commands(message)
 
 async def setup(bot: commands.Bot):
 
