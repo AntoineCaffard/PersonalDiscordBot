@@ -26,3 +26,12 @@ def genie_result_embed(user, question, answer, color=discord.Color.blue()):
     embed.add_field(name="Demande", value=f"{question}", inline=False)
     embed.add_field(name="Reponse", value=f"```{answer}```", inline=False)
     return embed
+
+def quote_result_embed(message, author, color=discord.Color.blurple()):
+    """
+    Crée un embed stylisé pour une citation
+    """
+    embed = discord.Embed(description=f"❝ {message} ❞",color=color)
+    embed.set_footer(text=f"— {author}")
+    embed.timestamp = discord.utils.utcnow()
+    return embed

@@ -18,6 +18,8 @@ class MyBot(commands.Bot):
         print("✅ diceCog chargé")
         await self.load_extension("cogs.genieCog")
         print("✅ genieCog chargé")
+        await self.load_extension("cogs.quoteCog")
+        print("✅ quoteCog chargé")
         synced = await self.tree.sync()
         print(f"✅ {len(synced)} commandes synchronisées")
         for commands in synced:
