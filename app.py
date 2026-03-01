@@ -19,8 +19,6 @@ class MyBot(commands.Bot):
         guild = discord.Object(id=self.guild_id)
         synced = await self.tree.sync(guild=guild)
         print(f"✅ {len(synced)} commandes synchronisées sur le serveur test")
-        for cmd in synced:
-            print("-", cmd.name)
 
     async def on_ready(self):
         print(f"Connecté en tant que {self.user} (ID: {self.user.id})")
