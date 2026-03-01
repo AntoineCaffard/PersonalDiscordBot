@@ -16,9 +16,8 @@ class MyBot(commands.Bot):
     async def setup_hook(self):
         await self.load_extension("cogs.diceCog")
         print("✅ diceCog chargé")
-        guild = discord.Object(id=self.guild_id)
-        synced = await self.tree.sync(guild=guild)
-        print(f"✅ {len(synced)} commandes synchronisées sur le serveur test")
+        synced = await self.tree.sync()
+        print(f"✅ {len(synced)} commandes synchronisées")
 
     async def on_ready(self):
         print(f"✅ Connecté en tant que {self.user} (ID: {self.user.id})")

@@ -40,7 +40,7 @@ class DiceCog(commands.Cog):
     async def diceRoll(self, interaction: discord.Interaction, dice: str):
        await self._send_dice(interaction, dice, mode="normal")
 
-    @app_commands.command(name="d_mj", description="Lance un ou plusieurs dés")
+    @app_commands.command(name="d_mj", description="Lance un ou plusieurs dés en ephemere")
     @app_commands.describe(dice="Exemple : 1d20, 2d6, 4d10+3")
     async def diceRollMJ(self, interaction: discord.Interaction, dice: str):
        await self._send_dice(interaction, dice, mode="normal", hidden=True)
@@ -50,7 +50,7 @@ class DiceCog(commands.Cog):
     async def diceRollAdv(self, interaction: discord.Interaction, dice: str):
         await self._send_dice(interaction, dice, mode="avantage")
 
-    @app_commands.command(name="d_adv_mj", description="Lance un ou plusieurs dés et renvoie le maximum")
+    @app_commands.command(name="d_adv_mj", description="Lance un ou plusieurs dés et renvoie le maximum en ephemere")
     @app_commands.describe(dice="Exemple : 1d20, 2d6, 4d10+3")
     async def diceRollAdvMJ(self, interaction: discord.Interaction, dice: str):
         await self._send_dice(interaction, dice, mode="avantage", hidden=True)
@@ -60,7 +60,7 @@ class DiceCog(commands.Cog):
     async def diceRollDis(self, interaction: discord.Interaction, dice: str):
         await self._send_dice(interaction, dice, mode="desavantage")
 
-    @app_commands.command(name="d_dis_mj", description="Lance un ou plusieurs dés et renvoie le minimum")
+    @app_commands.command(name="d_dis_mj", description="Lance un ou plusieurs dés et renvoie le minimum en ephemere")
     @app_commands.describe(dice="Exemple : 1d20, 2d6, 4d10+3")
     async def diceRollDisMJ(self, interaction: discord.Interaction, dice: str):
         await self._send_dice(interaction, dice, mode="desavantage", hidden=True)
@@ -70,12 +70,12 @@ class DiceCog(commands.Cog):
     async def diceRollSum(self, interaction: discord.Interaction, dice: str):
         await self._send_dice(interaction, dice, mode="total")
     
-    @app_commands.command(name="d_sum_mj", description="Lance un ou plusieurs dés et renvoie la somme")
+    @app_commands.command(name="d_sum_mj", description="Lance un ou plusieurs dés et renvoie la somme en ephemere")
     @app_commands.describe(dice="Exemple : 1d20, 2d6, 4d10+3")
     async def diceRollSumMJ(self, interaction: discord.Interaction, dice: str):
         await self._send_dice(interaction, dice, mode="total", hidden=True)
 
-    @app_commands.command(name="d_moy", description="Lance un ou plusieurs dés et renvoie la somme")
+    @app_commands.command(name="d_moy", description="Lance un ou plusieurs dés et renvoie la moyenne")
     @app_commands.describe(dice="Exemple : 1d20, 2d6, 4d10+3")
     async def diceRollMoy(self, interaction: discord.Interaction, dice: str):
         await self._send_dice(interaction, dice, mode="moyenne")
@@ -100,10 +100,3 @@ async def setup(bot: commands.Bot):
 
     cog = DiceCog(bot)
     await bot.add_cog(cog)
-
-    guild_id = int(os.getenv("GUILD_ID"))
-    guild = discord.Object(id=guild_id)
-
-    for cmd in [cog.diceRoll, cog.diceRollAdv, cog.diceRollDis, cog.diceRollSum, cog.diceRollMoy,
-    cog.diceRollMJ, cog.diceRollAdvMJ, cog.diceRollDisMJ, cog.diceRollSumMJ]:
-        bot.tree.add_command(cmd, guild=guild)
