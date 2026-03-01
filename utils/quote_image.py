@@ -1,81 +1,74 @@
 import io
 import os
 import textwrap
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFont
 
 def create_quote_image(message, author):
-    # --- Configuration ---
+    # --- Configuration de base ---
     width, height = 1200, 800 
-    # Chemins vers les variantes de polices
-    font_bold = os.path.join("fonts", "Roboto-Bold.ttf")   # Pour la citation
-    font_light = os.path.join("fonts", "Roboto-Light.ttf") # Pour l'auteur
+    font_path = os.path.join("fonts", "Roboto-VariableFont_wdth,wght.ttf")
 
-    # 1. Fond dégradé (inchangé mais efficace)
-    color_top = (255, 60, 140)    
+    color_top = (255, 60, 140) 
     color_bottom = (255, 150, 120)
+    
     base = Image.new('RGB', (width, height), color_top)
     top_layer = Image.new('RGB', (width, height), color_bottom)
-    mask = Image.new('L', (width, height))
-    mask_data = [int(255 * (y / height)) for y in range(height) for _ in range(width)]
-    mask.putdata(mask_data)
-    base.paste(top_layer, (0, 0), mask)
     
+    mask = Image.new('L', (width, height))
+    mask_data = []
+    for y in range(height):
+        mask_data.extend([int(255 * (y / height))] * width)
+    mask.putdata(mask_data)
+    
+    base.paste(top_layer, (0, 0), mask)
     draw = ImageDraw.Draw(base)
 
-    # 2. Calcul dynamique avec prise en compte de l'auteur
     font_size = 110  
-    max_w, max_h = width * 0.8, height * 0.7
-    
+    max_text_width = width * 0.85  
+    max_text_height = height * 0.6 
+
+    full_quote = f'"{message}"'
+    w_q, h_q = 0, 0
+
     while font_size > 20:
         try:
-            f_main = ImageFont.truetype(font_bold, font_size)
-            # L'auteur est 40% plus petit que la citation, mais pas moins de 45px
-            author_size = max(45, int(font_size * 0.5))
-            f_author = ImageFont.truetype(font_light, author_size)
+            font_main = ImageFont.truetype(font_path, font_size)
         except:
-            f_main = f_author = ImageFont.load_default()
-
-        # Wrap intelligent : plus la police est grosse, moins on met de mots par ligne
-        chars = max(15, int(max_w / (font_size * 0.45)))
-        lines = textwrap.wrap(message, width=chars)
-        wrapped_q = f'“{"\n".join(lines)}”' # Utilisation de vrais guillemets typo
-
-        # Mesures
-        bq = draw.multiline_textbbox((0, 0), wrapped_q, font=f_main, align="center", spacing=12)
-        wq, hq = bq[2]-bq[0], bq[3]-bq[1]
+            font_main = ImageFont.load_default()
+        chars_per_line = max(10, int(max_text_width / (font_size * 0.45)))
+        lines = textwrap.wrap(message, width=chars_per_line)
+        full_quote = f'"{  " ".join(lines)  }"'
         
-        txt_a = f"— {author}"
-        ba = draw.textbbox((0, 0), txt_a, font=f_author)
-        wa, ha = ba[2]-ba[0], ba[3]-ba[1]
+        wrapped_text = "\n".join(lines)
+        full_quote_wrapped = f'"{wrapped_text}"'
+        bbox = draw.multiline_textbbox((0, 0), full_quote_wrapped, font=font_main, align="center")
+        w_q, h_q = bbox[2] - bbox[0], bbox[3] - bbox[1]
 
-        if wq <= max_w and (hq + ha + 60) <= max_h:
+        if w_q <= max_text_width and h_q <= max_text_height:
+            full_quote = full_quote_wrapped
             break
-        font_size -= 4
-
-    # 3. Calcul de la position de départ (Centrage vertical parfait)
-    spacing = 60
-    total_h = hq + spacing + ha
-    start_y = (height - total_h) / 2
-
-    # 4. Ajout d'une ombre portée légère pour la lisibilité
-    # On dessine le texte en noir très transparent légèrement décalé
-    shadow_color = (0, 0, 0, 40)
-    offset = 3
+        
+        font_size -= 5
+    try:
+        font_author = ImageFont.truetype(font_path, max(60, int(font_size * 0.5)))
+    except:
+        font_author = ImageFont.load_default()
+        
+    author_text = f"- {author}"
+    bbox_a = draw.textbbox((0, 0), author_text, font=font_author)
+    w_a, h_a = bbox_a[2] - bbox_a[0], bbox_a[3] - bbox_a[1]
     
-    # Dessin citation
-    draw.multiline_text(((width-wq)/2 + offset, start_y + offset), wrapped_q, 
-                        font=f_main, fill=(0,0,0,60), align="center", spacing=12)
-    draw.multiline_text(((width-wq)/2, start_y), wrapped_q, 
-                        font=f_main, fill="white", align="center", spacing=12)
-    
-    # Dessin auteur (un peu plus de transparence pour l'auteur pour le style)
-    draw.text(((width-wa)/2 + offset, start_y + hq + spacing + offset), txt_a, 
-              font=f_author, fill=(0,0,0,60))
-    draw.text(((width-wa)/2, start_y + hq + spacing), txt_a, 
-              font=f_author, fill=(255, 255, 255, 230))
+    spacing = 50
+    total_content_height = h_q + spacing + h_a
+    current_y = (height - total_content_height) / 2
 
-    # 5. Export
-    buf = io.BytesIO()
-    base.save(buf, format='PNG', optimize=True)
-    buf.seek(0)
-    return buf
+    draw.multiline_text(((width - w_q) / 2, current_y), full_quote, 
+                        font=font_main, fill="white", align="center", spacing=10)
+    
+    draw.text(((width - w_a) / 2, current_y + h_q + spacing), author_text, 
+              font=font_author, fill="white")
+
+    img_byte_arr = io.BytesIO()
+    base.save(img_byte_arr, format='PNG', optimize=True)
+    img_byte_arr.seek(0)
+    return img_byte_arr
