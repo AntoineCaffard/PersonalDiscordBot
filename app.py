@@ -18,7 +18,9 @@ class MyBot(commands.Bot):
         print("✅ diceCog chargé")
         await self.load_extension("cogs.genieCog")
         print("✅ genieCog chargé")
-        synced = await self.tree.sync(guild=discord.Object(id=self.guild_id))
+        await self.load_extension("cogs.quoteCog")
+        print("✅ quoteCog chargé")
+        synced = await self.tree.sync()
         print(f"✅ {len(synced)} commandes synchronisées")
         for commands in synced:
             print(f"- {commands}")
