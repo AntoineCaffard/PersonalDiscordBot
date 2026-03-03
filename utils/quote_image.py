@@ -4,7 +4,7 @@ import textwrap
 from PIL import Image, ImageDraw, ImageFont
 
 def create_quote_image(message, author):
-    # --- Configuration de base ---
+
     width, height = 1200, 800 
     font_path = os.path.join("fonts", "Roboto-VariableFont_wdth,wght.ttf")
 
