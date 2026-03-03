@@ -4,32 +4,25 @@ import textwrap
 from PIL import Image, ImageDraw, ImageFont
 
 def create_quote_image(message, author):
-    # --- Configuration de base ---
+
     width, height = 1200, 800 
     font_path = os.path.join("fonts", "Roboto-VariableFont_wdth,wght.ttf")
-
     color_top = (255, 60, 140) 
     color_bottom = (255, 150, 120)
-    
     base = Image.new('RGB', (width, height), color_top)
     top_layer = Image.new('RGB', (width, height), color_bottom)
-    
     mask = Image.new('L', (width, height))
     mask_data = []
     for y in range(height):
         mask_data.extend([int(255 * (y / height))] * width)
-    mask.putdata(mask_data)
-    
+    mask.putdata(mask_data)  
     base.paste(top_layer, (0, 0), mask)
     draw = ImageDraw.Draw(base)
-
     font_size = 110  
     max_text_width = width * 0.85  
     max_text_height = height * 0.6 
-
     full_quote = f'"{message}"'
     w_q, h_q = 0, 0
-
     while font_size > 20:
         try:
             font_main = ImageFont.truetype(font_path, font_size)
@@ -46,8 +39,7 @@ def create_quote_image(message, author):
 
         if w_q <= max_text_width and h_q <= max_text_height:
             full_quote = full_quote_wrapped
-            break
-        
+            break    
         font_size -= 5
     try:
         font_author = ImageFont.truetype(font_path, max(60, int(font_size * 0.5)))

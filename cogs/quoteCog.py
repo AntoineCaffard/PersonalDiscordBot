@@ -21,21 +21,16 @@ class QuoteCog(commands.Cog):
         matches = re.findall(r"<@!?(\d+)>", text)
         for user_id_str in matches:
             user_id = int(user_id_str)
-            
-            # 1. On tente d'abord le cache (rapide)
             member = guild.get_member(user_id)
-            
-            # 2. Si pas en cache, on va le chercher sur les serveurs de Discord
             if not member:
                 try:
                     member = await guild.fetch_member(user_id)
                 except discord.NotFound:
-                    continue # L'utilisateur n'existe plus ou n'est plus sur le serveur
+                    continue
                 except discord.HTTPException:
-                    continue # Erreur réseau
+                    continue
             
             if member:
-                # On remplace la mention complète par le pseudo (display_name)
                 text = re.sub(r"<@!?" + user_id_str + r">", member.display_name, text)
         return text
 
