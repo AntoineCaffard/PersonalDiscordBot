@@ -83,7 +83,7 @@ class DiceCog(commands.Cog):
 
     @commands.Cog.listener("on_message")
     async def on_message(self, message: discord.Message):
-        if message.author.bot:
+        if message.author.bot or "http" in message.content:
             return
         matches = re.finditer(r"(\d+)d(\d+)([+-]\d+)?", message.content.lower())
         for match in matches:
